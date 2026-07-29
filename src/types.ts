@@ -28,6 +28,8 @@ export interface NumberToken {
   currencyAttached: boolean;
   /** True for letter-notation tokens whose scale still needs a currency-context check. */
   letterSuffix: boolean;
+  /** True when the number sits in a numeric-dominant (table) line, not prose. */
+  numericLine: boolean;
   isPercent: boolean; // excluded from the max comparison when true
   page: number;
   x: number;

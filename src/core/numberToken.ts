@@ -41,10 +41,27 @@ const DIGIT_RE =
 
 /** Extract every numeric literal on a line (digit-based and written-out). */
 export function extractNumbers(line: Line): NumberToken[] {
-  return [...digitNumbers(line), ...writtenNumbers(line)];
+  const numericLine = isNumericDominant(line.text);
+  return [
+    ...digitNumbers(line, numericLine),
+    ...writtenNumbers(line, numericLine),
+  ];
 }
 
-function digitNumbers(line: Line): NumberToken[] {
+/**
+ * A line is "numeric-dominant" when numbers make up at least a quarter of its
+ * whitespace tokens — true for table rows (label + numeric columns), false for
+ * prose sentences. Used to stop a table caption ("in millions") from bleeding
+ * onto narrative numbers like "approximately 21,000 users".
+ */
+function isNumericDominant(text: string): boolean {
+  const tokens = text.trim().split(/\s+/).filter(Boolean);
+  if (!tokens.length) return false;
+  const numeric = tokens.filter((t) => /\d/.test(t)).length;
+  return numeric / tokens.length >= 0.25;
+}
+
+function digitNumbers(line: Line, numericLine: boolean): NumberToken[] {
   const out: NumberToken[] = [];
   for (const m of line.text.matchAll(DIGIT_RE)) {
     const g = m.groups!;
@@ -75,6 +92,7 @@ function digitNumbers(line: Line): NumberToken[] {
       inlineMultiplier,
       currencyAttached: Boolean(g.cur),
       letterSuffix,
+      numericLine,
       isPercent: Boolean(g.pct),
       page: line.page,
       x: line.xAt(numStart),
@@ -95,7 +113,7 @@ const WRITTEN_RE = new RegExp(
   "gi",
 );
 
-function writtenNumbers(line: Line): NumberToken[] {
+function writtenNumbers(line: Line, numericLine: boolean): NumberToken[] {
   const out: NumberToken[] = [];
   for (const m of line.text.matchAll(WRITTEN_RE)) {
     const phrase = m[0].toLowerCase();
@@ -107,6 +125,7 @@ function writtenNumbers(line: Line): NumberToken[] {
       inlineMultiplier: scale as Multiplier,
       currencyAttached: false,
       letterSuffix: false, // spelled words are unambiguous; no currency gate
+      numericLine,
       isPercent: false,
       page: line.page,
       x: line.xAt(m.index ?? 0),

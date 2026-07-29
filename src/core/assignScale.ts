@@ -59,8 +59,10 @@ function resolve(
       multiplier = t.inlineMultiplier;
       unit = UNIT_NAME[t.inlineMultiplier] ?? null;
     }
-  } else {
-    // Bare number: apply the nearest governing caption cue, if any.
+  } else if (t.numericLine) {
+    // Bare number in a table row: apply the nearest governing caption cue.
+    // Prose numbers (numericLine === false) are left unscaled so a table's
+    // "in millions" caption cannot bleed onto narrative text.
     const cue = governingCue(t, cues);
     if (cue) {
       multiplier = cue.multiplier;
