@@ -1,0 +1,26 @@
+{
+  "name": "pdf-largest-number",
+  "version": "1.0.0",
+  "description": "Find the largest number (raw and scale-adjusted) in a PDF.",
+  "type": "module",
+  "bin": {
+    "find-largest-number": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/cli.ts",
+    "find": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pdfjs-dist": "4.7.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

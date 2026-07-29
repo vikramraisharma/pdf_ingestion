@@ -1,0 +1,8 @@
+# Ignoring local LLM-code agent planning documentation
+memory-bank/
+docs/
+
+# Node
+node_modules/
+dist/
+*.log
